@@ -1,89 +1,75 @@
-// ADT STACK
+//ADT Queue
 #include <stdio.h>
-#include "ADT_stack.h"
+#include "ADT_queue.h"
+
+typedef struct student
+{
+	int id;
+	int score;
+} STD;
+
+#define STD_N 20
 
 int main(void)
 {
-	STACK* stack_ptr;
-	stack_ptr = create_stack(); // create_stack함수 호출
+	int i;
+	STD* std_ptr;
 
-	int i, k, m;
+	// Queue Creation
+	QUEUE* queue;
+	queue = create_queue();
 
-	// +-pushed 100
-	i = 100;
-	if(!push(stack_ptr, &i)) // push함수 호출
+	// memory allocation
+	STD* c[STD_N];
+	for(i = 0 ; i < STD_N ; i++)
 	{
-		printf("oops\n"); // 구문에서 오류 발생 시 oops 출력.
-		return -1;
-	}
-	else // 오류가 나지 않을 시
-	{
-		fill_space(stack_ptr->count); // fill_space 함수 호출 (공백 입력)
-		printf(" +->pushed: %d\n", i);
+		c[i] = (STD*)malloc(sizeof(STD));
 	}
 
-	// +-pushed 200
-	k = 200; // i = 100과 동일한 방법
-	if(!push(stack_ptr, &k))
+	// Prepare data
+	for(i = 0 ; i < STD_N ; i++)
 	{
-		printf("oops\n");
-		return -1;
-	}
-	else
-	{
-		fill_space(stack_ptr->count);
-		printf(" +->pushed: %d\n", k);
+		c[i]->id	= i;
+		c[i]->score	= i; // no meaning
 	}
 
-	// +-pushed 300
-	m = 300; // i = 100과 동일한 방법
-	if(!push(stack_ptr, &m))
+	// Data Insertion into Queue
+	for(i = 0 ; i < STD_N ; i++)
 	{
-		printf("oops\n");
-		return -1;
-	}
-	else
-	{
-		fill_space(stack_ptr->count);
-		printf(" +->pushed: %d\n", m);
-	}
-
-	// popped 300
-	int* temp; // temp 변수 선언(백업용)
-	temp = (int*)pop(stack_ptr); // pop함수 선언, 데이터를 temp로 백업
-	fill_space(stack_ptr->count);
-	printf("  <-popped: %d\n", *temp);
-
-	// pushed loop(배열의 1~10)
-	int idx;
-	int data[10] = {1,2,3,4,5,6,7,8,9,10};
-	
-	for(idx = 0 ;idx < 10 ;idx++)
-	{
-		if(!push(stack_ptr, &data[idx]))
+		if(enqueue(queue, c[i]))
 		{
-			printf("oops\n");
-			return -1;
+			printf("Enqueue: %d\n", c[i]->id);
 		}
 		else
 		{
-			fill_space(stack_ptr->count);
-			printf(" +->pushed: %d\n", data[idx]);
+			printf("Enqueue failed\n");
+			return -1;
 		}
 	}
 
-	// loop pop until empty
-	while(stack_ptr->count != 0) // count가 0이 아닐 때까지만 반복
+	// Data Extraction from Queue
+	while(queue->count != 0)
 	{
-		temp = (int*)pop(stack_ptr);
-		fill_space(stack_ptr->count);
-		printf("  <-popped: %d\n", *temp);
+		std_ptr = (STD*)dequeue(queue);
+		printf("Dequeue: %d\n", std_ptr->id);
 	}
 
-	if(stack_ptr->count == 0) // count가 0이라면 구문 출력
+	// Re-insertion
+	for(i = 0 ; i < STD_N ; i++)
 	{
-		printf("stack is empty");
+		if(enqueue(queue, c[i]))
+		{
+			printf("Enqueue: %d\n", c[i]->id);
+		}
+		else
+		{
+			printf("Enqueue failed\n");
+			return -1;
+		}
 	}
+
+	// destroy all queue and data
+	destroy_queue(queue);
 
 	return 0;
 }
